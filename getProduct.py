@@ -58,41 +58,53 @@ for each in search_skii_html:
 # for each in search_skii_tw_html:
 #     print(each.text)
 
-# LANCOME
-# 此網站有安全驗證
-# url_lancome = "https://www.lancome-usa.com/skincare/by-category/toners/"
-# req_lancome = requests.get(url_lancome, headers=headers)
-# soup_lancome = BeautifulSoup(req_lancome.text, "html.parser")
-# search_lancome_html = soup_lancome.select('h2[class="c-product-tile__name"]')
-# for each in search_lancome_html:
-#     print(each.text)
+####LANCOME####
 
-# PARIS
-# 不同產品替換網址也可抓取
-url_paris = "https://www.lorealparis.com.tw/face-care/water-essence"
-req_paris = requests.get(url_paris, headers=headers)
-soup_paris = BeautifulSoup(req_paris.text, "html.parser")
+def get_LANCOME():
 
-search_paris_html = soup_paris.find("div", class_="component search-results").prettify()
+    #此網站有安全驗證
+    url_lancome = "https://www.lancome-usa.com/skincare/by-category/toners/"
+    req_lancome = requests.get(url_lancome, headers=headers)
+    soup_lancome = BeautifulSoup(req_lancome.text, "html.parser")
+    search_lancome_html = soup_lancome.select('h2[class="c-product-tile__name"]')
+    for each in search_lancome_html:
+        print(each.text)
 
-pattern = r":initialdata=\'(.*?)\'"  # .表示任意英數中文字，*表示任意長度，?表示不抓到最外層""
-match = re.search(pattern, search_paris_html)
+####PARIS####
 
-if match:
-    initialdata_json = match.group(1)
-    initialdata_dict = json.loads(initialdata_json)
-    for item in initialdata_dict["list"]:
-        title = item["itemResult"].get("title", "")
-        print(f"化妝品名稱: {title}")
-else:
-    print("No initialdata found in the HTML content.")
+def get_PARIS():
+
+    url_paris = "https://www.lorealparis.com.tw/face-care/water-essence"
+    req_paris = requests.get(url_paris, headers=headers)
+    soup_paris = BeautifulSoup(req_paris.text, "html.parser")
+
+    search_paris_html = soup_paris.find("div", class_="component search-results").prettify()
+    search_paris_html = soup_paris.find("div", class_="articleWrapper").prettify()
+    
+    #print(f'acticle_title_html:{search_paris_html}')
+    pattern = r":initialdata=\'(.*)\'"  # .表示任意英數中文字，*表示任意長度，?表示不抓到最外層""
+    match = re.search(pattern, search_paris_html)
+
+    if match:
+        initialdata_json = match.group(1)
+        initialdata_dict = json.loads(initialdata_json)
+        for item in initialdata_dict["list"]:
+            title = item["itemResult"].get("title", "")
+            print(f"化妝品名稱: {title}")
+    else:
+        print("No initialdata found in the HTML content.")
 
 
-# CHANEL
-url_chanel = "https://www.chanel.com/tw/skincare/toners-lotions/c/6x1x9/"
-req_chanel = requests.get(url_chanel, headers=headers)
-soup_chanel = BeautifulSoup(req_chanel.text, "html.parser")
-search_chanel_html = soup_chanel.select("span.txt-product__title")
-print(search_chanel_html)
-for each in search_chanel_html:
-    print(each.text)
+####CHANEL####
+
+def get_CHANEL():
+        
+    url_chanel = "https://www.chanel.com/tw/skincare/toners-lotions/c/6x1x9/"
+    req_chanel = requests.get(url_chanel, headers=headers)
+    soup_chanel = BeautifulSoup(req_chanel.text, "html.parser")
+    search_chanel_html = soup_chanel.select("span.txt-product__title")
+    print(search_chanel_html)
+    for each in search_chanel_html:
+        print(each.text)
+
+get_PARIS()
