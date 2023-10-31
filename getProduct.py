@@ -41,13 +41,16 @@ headers = {
 # product = product.replace(" ", "%20")
 #  url_skii = "https://www.sk-ii.com/search.php?query=" + product
 
+
 # 不同產品替換網址也可抓取
-url_skii = "https://www.sk-ii.com/our-products/toners"
-req_skii = requests.get(url_skii, headers=headers)
-soup_skii = BeautifulSoup(req_skii.text, "html.parser")
-search_skii_html = soup_skii.select("div.card-title:not(:has(p))")
-for each in search_skii_html:
-    print(each.text)
+def get_SKII():
+    url_skii = "https://www.sk-ii.com/our-products/toners"
+    req_skii = requests.get(url_skii, headers=headers)
+    soup_skii = BeautifulSoup(req_skii.text, "html.parser")
+    search_skii_html = soup_skii.select("div.card-title:not(:has(p))")
+    for each in search_skii_html:
+        print(each.text)
+
 
 # SKII 台灣官網
 # url_skii_tw = "https://sk-ii.com.tw/our-products/toner"
@@ -60,9 +63,9 @@ for each in search_skii_html:
 
 ####LANCOME####
 
-def get_LANCOME():
 
-    #此網站有安全驗證
+def get_LANCOME():
+    # 此網站有安全驗證
     url_lancome = "https://www.lancome-usa.com/skincare/by-category/toners/"
     req_lancome = requests.get(url_lancome, headers=headers)
     soup_lancome = BeautifulSoup(req_lancome.text, "html.parser")
@@ -70,18 +73,33 @@ def get_LANCOME():
     for each in search_lancome_html:
         print(each.text)
 
+
 ####PARIS####
+def get_PARIS_all():
+    url_paris = "https://www.lorealparis.com.tw/"
+    req_paris = requests.get(url_paris, headers=headers)
+    soup_paris = BeautifulSoup(req_paris.text, "html.parser")
+    search_paris_html = soup_paris.find(
+        "collapsable", {"identifier": "unique-id-5e7a9fc4-b01b-4f86-8061-1242ba33e9e7"}
+    )
+    paris_a = search_paris_html.find_all("a")
+    for a in paris_a:
+        paris_href = a.get("href")
+        pairs_text = a.text
+        print("連結網址:", paris_href)
+
 
 def get_PARIS():
-
     url_paris = "https://www.lorealparis.com.tw/face-care/water-essence"
     req_paris = requests.get(url_paris, headers=headers)
     soup_paris = BeautifulSoup(req_paris.text, "html.parser")
 
-    search_paris_html = soup_paris.find("div", class_="component search-results").prettify()
+    search_paris_html = soup_paris.find(
+        "div", class_="component search-results"
+    ).prettify()
     search_paris_html = soup_paris.find("div", class_="articleWrapper").prettify()
-    
-    #print(f'acticle_title_html:{search_paris_html}')
+
+    # print(f'acticle_title_html:{search_paris_html}')
     pattern = r":initialdata=\'(.*)\'"  # .表示任意英數中文字，*表示任意長度，?表示不抓到最外層""
     match = re.search(pattern, search_paris_html)
 
@@ -97,8 +115,8 @@ def get_PARIS():
 
 ####CHANEL####
 
+
 def get_CHANEL():
-        
     url_chanel = "https://www.chanel.com/tw/skincare/toners-lotions/c/6x1x9/"
     req_chanel = requests.get(url_chanel, headers=headers)
     soup_chanel = BeautifulSoup(req_chanel.text, "html.parser")
@@ -107,4 +125,7 @@ def get_CHANEL():
     for each in search_chanel_html:
         print(each.text)
 
-get_PARIS()
+
+get_PARIS_all()
+
+# get_PARIS()
