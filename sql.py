@@ -7,6 +7,7 @@ from pathlib import Path
 import os
 import numpy as np
 import json
+import getProduct
 
 ##1025
 
@@ -35,7 +36,28 @@ def conn():
 
     return connect
 
+def insert_ingredient_intro_to_db(ingred_name,ingred_intro):
+    
+        with connect_db.cursor() as cursor:
 
+        ##查詢Ingredient_introduction_table是否有叫做ingredient的成分
+            query = f'SELECT * FROM Ingredient_introduction_table where ingredient = ?' 
+            cursor.execute(query, ingred_name)
+            ingred_name_results = cursor.fetchall()
+
+            print(ingred_name)
+            if not ingred_name_results :#如果目前資料庫沒有此成分，則新增
+
+                query = f'INSERT INTO Ingredient_introduction_table (ingredient,ingredient_introduction) VALUES (?,?)'
+                cursor.execute(query, (ingred_name,ingred_intro))
+                connect_db.commit()
+                print("新增成功")
+                print("---------------------")
+
+                
+            else:
+                print("已有此成分")
+                print("---------------------")
 def insert_brand_to_db(brand_name):
 
     with connect_db.cursor() as cursor:
@@ -105,24 +127,26 @@ def insert_product_to_db(product_name,ingred):
             print("已有此商品")
             print("---------------------")
 
-def insert_ingred_to_db():
-    u=4
 if __name__ == "__main__":
 
     connect_db = conn()
+    ###ingredient_introduction_table###
+    prefer_ingred = getProduct.prefer_ingred
+    for ingred in prefer_ingred:
+        insert_ingredient_intro_to_db(ingred["name"],ingred["introduction"])
 
     #######insert_product_to_db#######
 
     #打開json檔，並將資料存入cosmetics_data
     #依據cosmetics_data的長度跑迴圈，並將每個商品名稱存入product_name
 
-    with open("ingred.json", "r", encoding="utf-8") as json_file:
+    # with open("ingred.json", "r", encoding="utf-8") as json_file:
 
-        cosmetics_data = json.load(json_file)
+    #     cosmetics_data = json.load(json_file)
 
-    for i in cosmetics_data:
+    # for i in cosmetics_data:
 
-        insert_product_to_db(i["name"],i["ingerdients"])
+    #     insert_product_to_db(i["name"],i["ingerdients"])
 
 
 
