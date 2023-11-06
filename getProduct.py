@@ -3,6 +3,33 @@ from bs4 import BeautifulSoup
 from urllib import request
 import json
 import re
+def ptt():
+
+    int_page = 9247
+
+    
+    # page_number = 9247
+
+    # while page_number >= 9245:
+    #      url = "https://www.ptt.cc/bbs/movie/index%s.html" % (page_number)
+
+    #      # Request
+    #      req = requests.get(url, headers=headers)
+    #      # BeautifulSoup
+    #      soup = BeautifulSoup(req.text, "html.parser")
+    #      # print(soup.prettify())
+    #      acticle_title_html = soup.select('div[class="title"]')
+
+    #      # print(acticle_title_html)
+
+    #      for each_article in acticle_title_html:
+    #           try:
+    #                print(each_article.a.text)
+    #                print("https://www.ptt.cc" + each_article.a["href"])
+    #           except:
+    #                print("you are 78")
+
+    #      page_number -= 1
 
 def compare_ingred(search_product_name,ingred_list):
     
@@ -27,7 +54,8 @@ def compare_ingred(search_product_name,ingred_list):
     "六胜肽",
     "海藻酸鈉",
     "矽橡膠",
-    "泛酸"
+    "泛酸",
+    "礦物油"
 ]
     prefer_ingred_EN = [
     "Hyaluronic Acid",
@@ -49,9 +77,10 @@ def compare_ingred(search_product_name,ingred_list):
     "Argireline",
     "Sodium Alginate",
     "CYCLOPENTASILOXANE",
-    'PANTHENOL'
+    'PANTHENOL',
+    "Mineral Oil"
 ]
-    print("json start")
+    print("--------json start--------")
     print(len(ingred_list))
     json_data = []
     ingredient=[]
@@ -63,83 +92,18 @@ def compare_ingred(search_product_name,ingred_list):
                 ingredient.append(prefer_ingred_EN[j])
                 
     json_data = [{"name":search_product_name,"ingredient": ingredient}]
+    
     ingred_json.extend(json_data)
 
     ###將成分用漂亮的json格式顯示###
     pretty_json = json.dumps(ingred_json, ensure_ascii=False, indent=4)
     print(f"json : {pretty_json}")
-    
-
-
-
-# page_number = 9247
-
-# while page_number >= 9245:
-#      url = "https://www.ptt.cc/bbs/movie/index%s.html" % (page_number)
-
-#      # Request
-#      req = requests.get(url, headers=headers)
-#      # BeautifulSoup
-#      soup = BeautifulSoup(req.text, "html.parser")
-#      # print(soup.prettify())
-#      acticle_title_html = soup.select('div[class="title"]')
-
-#      # print(acticle_title_html)
-
-#      for each_article in acticle_title_html:
-#           try:
-#                print(each_article.a.text)
-#                print("https://www.ptt.cc" + each_article.a["href"])
-#           except:
-#                print("you are 78")
-
-#      page_number -= 1
-
-
-# SKII 官網
-# 產品示例:query = 化妝品英文 (英文間隔空白用 %20 取代)
-# https://www.sk-ii.com/search.php?query=Facial%20Treatment%20Clear%20Lotion
-# 化妝水的英文 = Lotion
-# product = "Lotion"
-# product = product.replace(" ", "%20")
-#  url_skii = "https://www.sk-ii.com/search.php?query=" + product
-
-
-# 不同產品替換網址也可抓取
-def get_SKII():
-    url_skii = "https://www.sk-ii.com/our-products/toners"
-    req_skii = requests.get(url_skii, headers=headers)
-    soup_skii = BeautifulSoup(req_skii.text, "html.parser")
-    search_skii_html = soup_skii.select("div.card-title:not(:has(p))")
-    for each in search_skii_html:
-        print(each.text)
-
-
-# SKII 台灣官網
-# url_skii_tw = "https://sk-ii.com.tw/our-products/toner"
-# req_skii_tw = requests.get(url_skii_tw, headers=headers)
-# soup_skii_tw = BeautifulSoup(req_skii_tw.text, "html.parser")
-# print(soup_skii_tw)
-# search_skii_tw_html = soup_skii_tw.select('div[class="overflow-hidden"]')
-# for each in search_skii_tw_html:
-#     print(each.text)
-
-####LANCOME####
-
-
-def get_LANCOME():
-    # 此網站有安全驗證
-    url_lancome = "https://www.lancome-usa.com/skincare/by-category/toners/"
-    req_lancome = requests.get(url_lancome, headers=headers)
-    soup_lancome = BeautifulSoup(req_lancome.text, "html.parser")
-    search_lancome_html = soup_lancome.select('h2[class="c-product-tile__name"]')
-    for each in search_lancome_html:
-        print(each.text)
-
 
 ####PARIS####
 
 def get_PARIS():
+
+    set_products = set()#確保裡面的東西不會重複
 
     ####找到所有連結####
     server = "https://www.lorealparis.com.tw"
@@ -184,6 +148,14 @@ def get_PARIS():
                 search_product_name = search_product_html.text
                 print(f"化妝品名稱: {search_product_name}")
 
+                #確保set_products裡面的東西不會重複
+                if search_product_name in set_products:
+                    print(search_product_name + " 已存在")
+                    continue
+
+                # 将商品名称添加到集合中，以标记为已处理
+                set_products.add(search_product_name)
+
                 req_product = requests.get(url, headers=headers)
                 soup_product = BeautifulSoup(req_product.text, "html.parser")
                 search_product_html = soup_product.select("div.field-text")
@@ -196,8 +168,9 @@ def get_PARIS():
                     list.append(line.strip())
                 
                 compare_ingred(search_product_name,list)
+                
                 ###將成分存入json檔###
-                with open("ingred.json", "w", encoding="utf-8") as f:
+                with open("ingred_paris.json", "w", encoding="utf-8") as f:
                     json.dump(ingred_json, f, ensure_ascii=False, indent=4)
                             #print(f"ingredient:{list}")
 
@@ -206,17 +179,7 @@ def get_PARIS():
         print(f"----------------------")
 
 
-####CHANEL####
-
-
-def get_CHANEL():
-    url_chanel = "https://www.chanel.com/tw/skincare/toners-lotions/c/6x1x9/"
-    req_chanel = requests.get(url_chanel, headers=headers)
-    soup_chanel = BeautifulSoup(req_chanel.text, "html.parser")
-    search_chanel_html = soup_chanel.select("span.txt-product__title")
-    print(search_chanel_html)
-    for each in search_chanel_html:
-        print(each.text)
+####SKII####
 def get_SKII_all():
     url_skii = "https://www.sk-ii.com/"
     req_skii = requests.get(url_skii, headers=headers)
@@ -255,8 +218,6 @@ if __name__ == "__main__":
     }
 
     ingred_json=[]
-    #get_PARIS()
-    get_SKII_ingredient()
+    get_PARIS()
+    #get_SKII_ingredient()
     
-
-# get_PARIS()
