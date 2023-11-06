@@ -4,72 +4,69 @@ from urllib import request
 import json
 import re
 
-def compare_ingred(search_product_name,ingred_list):
-    
+
+def compare_ingred(search_product_name, ingred_list):
     ###比對抓到的成分是否為我們想要的，若是則存入list中###
     prefer_ingred = [
-    "玻尿酸",
-    "維他命A",
-    "泛酸(維他命B5)",
-    "角鯊烯",
-    "胜肽",
-    "維他命C",
-    "果酸",
-    "胺基酸",
-    "神經醯胺",
-    "水楊酸",
-    "香精",
-    "熊果素",
-    "膠原蛋白",
-    "二氧化鈦",
-    "傳明酸",
-    "三胜肽",
-    "六胜肽",
-    "海藻酸鈉",
-    "矽橡膠",
-    "泛酸"
-]
+        "玻尿酸",
+        "維他命A",
+        "泛酸(維他命B5)",
+        "角鯊烯",
+        "胜肽",
+        "維他命C",
+        "果酸",
+        "胺基酸",
+        "神經醯胺",
+        "水楊酸",
+        "香精",
+        "熊果素",
+        "膠原蛋白",
+        "二氧化鈦",
+        "傳明酸",
+        "三胜肽",
+        "六胜肽",
+        "海藻酸鈉",
+        "矽橡膠",
+        "泛酸",
+    ]
     prefer_ingred_EN = [
-    "Hyaluronic Acid",
-    "Vitamin A",
-    "Panthenol (Vitamin B5)",
-    "Squalene",
-    "Peptides",
-    "Vitamin C",
-    "Alpha Hydroxy Acids (AHAs)",
-    "Amino Acids",
-    "Ceramides",
-    "Salicylic Acid",
-    "Fragrance",
-    "Arbutin",
-    "Collagen",
-    "Titanium Dioxide",
-    "Transamin",
-    "Tripeptides",
-    "Argireline",
-    "Sodium Alginate",
-    "CYCLOPENTASILOXANE",
-    'PANTHENOL'
-]
+        "Hyaluronic Acid",
+        "Vitamin A",
+        "Panthenol (Vitamin B5)",
+        "Squalene",
+        "Peptides",
+        "Vitamin C",
+        "Alpha Hydroxy Acids (AHAs)",
+        "Amino Acids",
+        "Ceramides",
+        "Salicylic Acid",
+        "Fragrance",
+        "Arbutin",
+        "Collagen",
+        "Titanium Dioxide",
+        "Transamin",
+        "Tripeptides",
+        "Argireline",
+        "Sodium Alginate",
+        "CYCLOPENTASILOXANE",
+        "PANTHENOL",
+    ]
     print("json start")
-    print(len(ingred_list))
     json_data = []
-    ingredient=[]
+    ingredient = []
 
-    for i in range(len(ingred_list)): ##依據不同成分跑
-        
-        for j in range(len(prefer_ingred)):##比對成分是否為我們想要的
-            if prefer_ingred[j] in ingred_list[i] or prefer_ingred_EN[j].lower() in ingred_list[i].lower():
-                ingredient.append(prefer_ingred_EN[j])
-                
-    json_data = [{"name":search_product_name,"ingredient": ingredient}]
+    dic = [{"name": "Vitamin A"}, {"name": "PANTHENOL"}]
+    for i in range(len(ingred_list)):  ##依據不同成分跑
+        for j in range(len(dic)):  ##比對成分是否為我們想要的
+            if dic[j]["name"] in ingred_list[i]:
+                ingredient.append(dic[j])
+
+    json_data = [{"name": search_product_name, "ingredient": ingredient}]
     ingred_json.extend(json_data)
 
     ###將成分用漂亮的json格式顯示###
     pretty_json = json.dumps(ingred_json, ensure_ascii=False, indent=4)
     print(f"json : {pretty_json}")
-    
-
 
 
 # page_number = 9247
@@ -139,8 +136,9 @@ def get_LANCOME():
 
 ####PARIS####
 
-def get_PARIS():
 
+def get_PARIS():
+    set_products = set()
     ####找到所有連結####
     server = "https://www.lorealparis.com.tw"
     req_server = requests.get(server, headers=headers)
@@ -153,7 +151,7 @@ def get_PARIS():
     ####找到所有連結的商品名稱及成分資訊####
     for a in tag_a:
         paris_href = a.get("href")
-        product_list_url= server + paris_href ##每種種類的連結 如化妝水、乳液
+        product_list_url = server + paris_href  ##每種種類的連結 如化妝水、乳液
         print("連結網址:", product_list_url)
 
         req_paris = requests.get(product_list_url, headers=headers)
@@ -177,29 +175,37 @@ def get_PARIS():
                 url = item["url"]
 
                 ####找到各個商品名稱以及商品資訊####
-
                 req_product = requests.get(url, headers=headers)
                 soup_product = BeautifulSoup(req_product.text, "html.parser")
-                search_product_html = soup_product.find("span", class_="oap-product-header__name")
+                search_product_html = soup_product.find(
+                    "span", class_="oap-product-header__name"
+                )
                 search_product_name = search_product_html.text
                 print(f"化妝品名稱: {search_product_name}")
+
+                if search_product_name in set_products:
+                    print(search_product_name + "已存在")
+                    continue
+
+                # 将商品名称添加到集合中，以标记为已处理
+                set_products.add(search_product_name)
 
                 req_product = requests.get(url, headers=headers)
                 soup_product = BeautifulSoup(req_product.text, "html.parser")
                 search_product_html = soup_product.select("div.field-text")
-                #print(f"ingredient: {search_product_html[1].text}")
+                # print(f"ingredient: {search_product_html[1].text}")
                 text = search_product_html[1].text
-                text = text.replace("," , "\n")
+                text = text.replace(",", "\n")
                 lines = text.split("\n")
                 list = []
                 for line in lines:
                     list.append(line.strip())
-                
-                compare_ingred(search_product_name,list)
+
+                compare_ingred(search_product_name, list)
                 ###將成分存入json檔###
-                with open("ingred.json", "w", encoding="utf-8") as f:
+                with open("ingred_Paris.json", "w", encoding="utf-8") as f:
                     json.dump(ingred_json, f, ensure_ascii=False, indent=4)
-                            #print(f"ingredient:{list}")
+                    # print(f"ingredient:{list}")
 
         else:
             print("No initialdata found in the HTML content.")
@@ -217,6 +223,8 @@ def get_CHANEL():
     print(search_chanel_html)
     for each in search_chanel_html:
         print(each.text)
+
+
 def get_SKII_all():
     url_skii = "https://www.sk-ii.com/"
     req_skii = requests.get(url_skii, headers=headers)
@@ -249,14 +257,10 @@ def get_SKII_ingredient():
 
 
 if __name__ == "__main__":
-
     headers = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"
     }
 
-    ingred_json=[]
-    #get_PARIS()
-    get_SKII_ingredient()
-    
-
-# get_PARIS()
+    ingred_json = []
+    get_PARIS()
+    # get_SKII_ingredient()
