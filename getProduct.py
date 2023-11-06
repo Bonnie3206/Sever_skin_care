@@ -70,9 +70,6 @@ def compare_ingred(search_product_name,ingred_list):
     print(f"json : {pretty_json}")
     
 
-headers = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"
-}
 
 
 # page_number = 9247
@@ -220,11 +217,46 @@ def get_CHANEL():
     print(search_chanel_html)
     for each in search_chanel_html:
         print(each.text)
+def get_SKII_all():
+    url_skii = "https://www.sk-ii.com/"
+    req_skii = requests.get(url_skii, headers=headers)
+    soup_skii = BeautifulSoup(req_skii.text, "html.parser")
+    search_skii_html = soup_skii.select("ul.child-nav")
+    search_skii_html = search_skii_html[1].find_all("a")
+
+    for each in search_skii_html:
+        skii_href = each.get("href")
+        print(f"網址:{skii_href}")
+
+
+def get_SKII():
+    url_skii = "https://www.sk-ii.com/our-products/toners"
+    req_skii = requests.get(url_skii, headers=headers)
+    soup_skii = BeautifulSoup(req_skii.text, "html.parser")
+    search_skii_html = soup_skii.select("a.event_buy_now_choose_product")
+    for each in search_skii_html:
+        skii_href = each.get("href")
+        print(skii_href)
+
+
+def get_SKII_ingredient():
+    url_skii = "https://www.sk-ii.com/product/cleanser/facial-treatment-cleansing-oil"
+    req_skii = requests.get(url_skii, headers=headers)
+    soup_skii = BeautifulSoup(req_skii.text, "html.parser")
+    search_skii_html = soup_skii.select("div.ingredients-content")
+    for each in search_skii_html:
+        print(each.text)
+
 
 if __name__ == "__main__":
 
+    headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"
+    }
+
     ingred_json=[]
-    get_PARIS()
+    #get_PARIS()
+    get_SKII_ingredient()
     
 
 # get_PARIS()
