@@ -4,64 +4,155 @@ from urllib import request
 import json
 import re
 
+prefer_ingred = [
+    {"name": "玻尿酸", "introduction": "玻尿酸的介紹"},
+    {"name": "維他命A", "introduction": "維他命A的介绍"},
+    {"name": "泛酸(維他命B5)", "introduction": "泛酸的介绍"},
+    {"name": "角鯊烯", "introduction": "角鯊烯的介绍"},
+    {"name": "胜肽肽", "introduction": "胜肽的介绍"},
+    {"name": "維他命C", "introduction": "維他命C的介绍"},
+    {"name": "果酸", "introduction": "果酸的介绍"},
+    {"name": "胺基酸", "introduction": "胺基酸的介绍"},
+    {"name": "神經醯胺", "introduction": "神經醯胺的介绍"},
+    {"name": "水楊酸", "introduction": "水楊酸的介绍"},
+    {"name": "香精", "introduction": "香精的介绍"},
+    {"name": "熊果素", "introduction": "熊果素的介绍"},
+    {"name": "膠原蛋白", "introduction": "膠原蛋白的介绍"},
+    {"name": "二氧化鈦", "introduction": "二氧化鈦的介绍"},
+    {"name": "傳明酸", "introduction": "傳明酸的介绍"},
+    {"name": "三胜肽", "introduction": "三胜肽的介绍"},
+    {"name": "六胜肽", "introduction": "六胜肽的介绍"},
+    {"name": "海藻酸鈉", "introduction": "海藻酸鈉的介绍"},
+    {"name": "矽橡膠", "introduction": "矽橡膠的介绍"},
+    {"name": "泛酸", "introduction": "泛酸的介绍"},
+    {"name": "礦物油", "introduction": "礦物油的介绍"},
+]
+prefer_ingred_EN = [
+    {"name": "Hyaluronic Acid", "introduction": "Introduction to Hyaluronic Acid"},
+    {"name": "Vitamin A", "introduction": "Introduction to Vitamin A"},
+    {
+        "name": "Panthenol (Vitamin B5)",
+        "introduction": "Introduction to Panthenol (Vitamin B5)",
+    },
+    {"name": "Squalene", "introduction": "Introduction to Squalene"},
+    {"name": "Peptides", "introduction": "Introduction to Peptides"},
+    {"name": "Vitamin C", "introduction": "Introduction to Vitamin C"},
+    {
+        "name": "Alpha Hydroxy Acids (AHAs)",
+        "introduction": "Introduction to Alpha Hydroxy Acids (AHAs)",
+    },
+    {"name": "Amino Acids", "introduction": "Introduction to Amino Acids"},
+    {"name": "Ceramides", "introduction": "Introduction to Ceramides"},
+    {"name": "Salicylic Acid", "introduction": "Introduction to Salicylic Acid"},
+    {"name": "Fragrance", "introduction": "Introduction to Fragrance"},
+    {"name": "Arbutin", "introduction": "Introduction to Arbutin"},
+    {"name": "Collagen", "introduction": "Introduction to Collagen"},
+    {"name": "Titanium Dioxide", "introduction": "Introduction to Titanium Dioxide"},
+    {"name": "Transamin", "introduction": "Introduction to Transamin"},
+    {"name": "Tripeptides", "introduction": "Introduction to Tripeptides"},
+    {"name": "Argireline", "introduction": "Introduction to Argireline"},
+    {"name": "Sodium Alginate", "introduction": "Introduction to Sodium Alginate"},
+    {
+        "name": "CYCLOPENTASILOXANE",
+        "introduction": "Introduction to CYCLOPENTASILOXANE",
+    },
+    {"name": "PANTHENOL", "introduction": "Introduction to PANTHENOL"},
+    {"name": "Mineral Oil", "introduction": "Introduction to Mineral Oil"},
+]
+
+
+def ptt():
+    int_page = 9247
+
+    # page_number = 9247
+
+    # while page_number >= 9245:
+    #      url = "https://www.ptt.cc/bbs/movie/index%s.html" % (page_number)
+
+    #      # Request
+    #      req = requests.get(url, headers=headers)
+    #      # BeautifulSoup
+    #      soup = BeautifulSoup(req.text, "html.parser")
+    #      # print(soup.prettify())
+    #      acticle_title_html = soup.select('div[class="title"]')
+
+    #      # print(acticle_title_html)
+
+    #      for each_article in acticle_title_html:
+    #           try:
+    #                print(each_article.a.text)
+    #                print("https://www.ptt.cc" + each_article.a["href"])
+    #           except:
+    #                print("you are 78")
+
+    #      page_number -= 1
+
 
 def compare_ingred(search_product_name, ingred_list):
     ###比對抓到的成分是否為我們想要的，若是則存入list中###
-    prefer_ingred = [
-        "玻尿酸",
-        "維他命A",
-        "泛酸(維他命B5)",
-        "角鯊烯",
-        "胜肽",
-        "維他命C",
-        "果酸",
-        "胺基酸",
-        "神經醯胺",
-        "水楊酸",
-        "香精",
-        "熊果素",
-        "膠原蛋白",
-        "二氧化鈦",
-        "傳明酸",
-        "三胜肽",
-        "六胜肽",
-        "海藻酸鈉",
-        "矽橡膠",
-        "泛酸",
-    ]
-    prefer_ingred_EN = [
-        "Hyaluronic Acid",
-        "Vitamin A",
-        "Panthenol (Vitamin B5)",
-        "Squalene",
-        "Peptides",
-        "Vitamin C",
-        "Alpha Hydroxy Acids (AHAs)",
-        "Amino Acids",
-        "Ceramides",
-        "Salicylic Acid",
-        "Fragrance",
-        "Arbutin",
-        "Collagen",
-        "Titanium Dioxide",
-        "Transamin",
-        "Tripeptides",
-        "Argireline",
-        "Sodium Alginate",
-        "CYCLOPENTASILOXANE",
-        "PANTHENOL",
-    ]
-    print("json start")
+    #     prefer_ingred = [
+    #     "玻尿酸",
+    #     "維他命A",
+    #     "泛酸(維他命B5)",
+    #     "角鯊烯",
+    #     "胜肽",
+    #     "維他命C",
+    #     "果酸",
+    #     "胺基酸",
+    #     "神經醯胺",
+    #     "水楊酸",
+    #     "香精",
+    #     "熊果素",
+    #     "膠原蛋白",
+    #     "二氧化鈦",
+    #     "傳明酸",
+    #     "三胜肽",
+    #     "六胜肽",
+    #     "海藻酸鈉",
+    #     "矽橡膠",
+    #     "泛酸",
+    #     "礦物油"
+    # ]
+
+    #     prefer_ingred_EN = [
+    #     "Hyaluronic Acid",
+    #     "Vitamin A",
+    #     "Panthenol (Vitamin B5)",
+    #     "Squalene",
+    #     "Peptides",
+    #     "Vitamin C",
+    #     "Alpha Hydroxy Acids (AHAs)",
+    #     "Amino Acids",
+    #     "Ceramides",
+    #     "Salicylic Acid",
+    #     "Fragrance",
+    #     "Arbutin",
+    #     "Collagen",
+    #     "Titanium Dioxide",
+    #     "Transamin",
+    #     "Tripeptides",
+    #     "Argireline",
+    #     "Sodium Alginate",
+    #     "CYCLOPENTASILOXANE",
+    #     'PANTHENOL',
+    #     "Mineral Oil"
+    # ]
+
+    print("--------json start--------")
+    print(len(ingred_list))
     json_data = []
     ingredient = []
 
-    dic = [{"name": "Vitamin A"}, {"name": "PANTHENOL"}]
     for i in range(len(ingred_list)):  ##依據不同成分跑
-        for j in range(len(dic)):  ##比對成分是否為我們想要的
-            if dic[j]["name"] in ingred_list[i]:
-                ingredient.append(dic[j])
+        for j in range(len(prefer_ingred)):  ##比對成分是否為我們想要的
+            if (
+                prefer_ingred[j]["name"] in ingred_list[i]
+                or prefer_ingred_EN[j]["name"].lower() in ingred_list[i].lower()
+            ):
+                ingredient.append(prefer_ingred_EN[j]["name"])
 
     json_data = [{"name": search_product_name, "ingredient": ingredient}]
+
     ingred_json.extend(json_data)
 
     ###將成分用漂亮的json格式顯示###
@@ -69,76 +160,12 @@ def compare_ingred(search_product_name, ingred_list):
     print(f"json : {pretty_json}")
 
 
-# page_number = 9247
-
-# while page_number >= 9245:
-#      url = "https://www.ptt.cc/bbs/movie/index%s.html" % (page_number)
-
-#      # Request
-#      req = requests.get(url, headers=headers)
-#      # BeautifulSoup
-#      soup = BeautifulSoup(req.text, "html.parser")
-#      # print(soup.prettify())
-#      acticle_title_html = soup.select('div[class="title"]')
-
-#      # print(acticle_title_html)
-
-#      for each_article in acticle_title_html:
-#           try:
-#                print(each_article.a.text)
-#                print("https://www.ptt.cc" + each_article.a["href"])
-#           except:
-#                print("you are 78")
-
-#      page_number -= 1
-
-
-# SKII 官網
-# 產品示例:query = 化妝品英文 (英文間隔空白用 %20 取代)
-# https://www.sk-ii.com/search.php?query=Facial%20Treatment%20Clear%20Lotion
-# 化妝水的英文 = Lotion
-# product = "Lotion"
-# product = product.replace(" ", "%20")
-#  url_skii = "https://www.sk-ii.com/search.php?query=" + product
-
-
-# 不同產品替換網址也可抓取
-def get_SKII():
-    url_skii = "https://www.sk-ii.com/our-products/toners"
-    req_skii = requests.get(url_skii, headers=headers)
-    soup_skii = BeautifulSoup(req_skii.text, "html.parser")
-    search_skii_html = soup_skii.select("div.card-title:not(:has(p))")
-    for each in search_skii_html:
-        print(each.text)
-
-
-# SKII 台灣官網
-# url_skii_tw = "https://sk-ii.com.tw/our-products/toner"
-# req_skii_tw = requests.get(url_skii_tw, headers=headers)
-# soup_skii_tw = BeautifulSoup(req_skii_tw.text, "html.parser")
-# print(soup_skii_tw)
-# search_skii_tw_html = soup_skii_tw.select('div[class="overflow-hidden"]')
-# for each in search_skii_tw_html:
-#     print(each.text)
-
-####LANCOME####
-
-
-def get_LANCOME():
-    # 此網站有安全驗證
-    url_lancome = "https://www.lancome-usa.com/skincare/by-category/toners/"
-    req_lancome = requests.get(url_lancome, headers=headers)
-    soup_lancome = BeautifulSoup(req_lancome.text, "html.parser")
-    search_lancome_html = soup_lancome.select('h2[class="c-product-tile__name"]')
-    for each in search_lancome_html:
-        print(each.text)
-
-
 ####PARIS####
 
 
 def get_PARIS():
-    set_products = set()
+    set_products = set()  # 確保裡面的東西不會重複
+
     ####找到所有連結####
     server = "https://www.lorealparis.com.tw"
     req_server = requests.get(server, headers=headers)
@@ -183,8 +210,9 @@ def get_PARIS():
                 search_product_name = search_product_html.text
                 print(f"化妝品名稱: {search_product_name}")
 
+                # 確保set_products裡面的東西不會重複
                 if search_product_name in set_products:
-                    print(search_product_name + "已存在")
+                    print(search_product_name + " 已存在")
                     continue
 
                 # 将商品名称添加到集合中，以标记为已处理
@@ -202,8 +230,9 @@ def get_PARIS():
                     list.append(line.strip())
 
                 compare_ingred(search_product_name, list)
+
                 ###將成分存入json檔###
-                with open("ingred_Paris.json", "w", encoding="utf-8") as f:
+                with open("ingred_paris.json", "w", encoding="utf-8") as f:
                     json.dump(ingred_json, f, ensure_ascii=False, indent=4)
                     # print(f"ingredient:{list}")
 
@@ -212,19 +241,7 @@ def get_PARIS():
         print(f"----------------------")
 
 
-####CHANEL####
-
-
-def get_CHANEL():
-    url_chanel = "https://www.chanel.com/tw/skincare/toners-lotions/c/6x1x9/"
-    req_chanel = requests.get(url_chanel, headers=headers)
-    soup_chanel = BeautifulSoup(req_chanel.text, "html.parser")
-    search_chanel_html = soup_chanel.select("span.txt-product__title")
-    print(search_chanel_html)
-    for each in search_chanel_html:
-        print(each.text)
-
-
+####SKII####
 def get_SKII_all():
     url_skii = "https://www.sk-ii.com/"
     req_skii = requests.get(url_skii, headers=headers)
@@ -260,6 +277,10 @@ if __name__ == "__main__":
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"
     }
+
+    ingred_json = []
+    get_PARIS()
+    # get_SKII_ingredient()
 
     ingred_json = []
     get_PARIS()
