@@ -215,7 +215,7 @@ def get_PARIS():
                     print(search_product_name + " 已存在")
                     continue
 
-                # 将商品名称添加到集合中，以标记为已处理
+                # 將商品名稱加入集合中，避免添加重複商品
                 set_products.add(search_product_name)
 
                 req_product = requests.get(url, headers=headers)
@@ -242,35 +242,73 @@ def get_PARIS():
 
 
 ####SKII####
-def get_SKII_all():
-    url_skii = "https://www.sk-ii.com/"
-    req_skii = requests.get(url_skii, headers=headers)
-    soup_skii = BeautifulSoup(req_skii.text, "html.parser")
-    search_skii_html = soup_skii.select("ul.child-nav")
-    search_skii_html = search_skii_html[1].find_all("a")
-
-    for each in search_skii_html:
-        skii_href = each.get("href")
-        print(f"網址:{skii_href}")
-
-
 def get_SKII():
-    url_skii = "https://www.sk-ii.com/our-products/toners"
-    req_skii = requests.get(url_skii, headers=headers)
-    soup_skii = BeautifulSoup(req_skii.text, "html.parser")
-    search_skii_html = soup_skii.select("a.event_buy_now_choose_product")
-    for each in search_skii_html:
-        skii_href = each.get("href")
-        print(skii_href)
+    set_products = set()  # 確保裡面的東西不會重複
 
+    ####找到所有連結####
+    server = "https://www.sk-ii.com"
+    req_server = requests.get(server, headers=headers)
+    soup_server = BeautifulSoup(req_server.text, "html.parser")
+    search_server_html = soup_server.find_all("ul", class_="child-nav")
+    tag_a = search_server_html[1].find_all("a")
 
-def get_SKII_ingredient():
-    url_skii = "https://www.sk-ii.com/product/cleanser/facial-treatment-cleansing-oil"
-    req_skii = requests.get(url_skii, headers=headers)
-    soup_skii = BeautifulSoup(req_skii.text, "html.parser")
-    search_skii_html = soup_skii.select("div.ingredients-content")
-    for each in search_skii_html:
-        print(each.text)
+    ####找到所有連結的商品名稱及成分資訊####
+    for a in tag_a:
+        skii_href = a.get("href")
+        product_list_url = server + skii_href  ##每種種類的連結 如化妝水、乳液
+        print(f"網址:{product_list_url}")
+        ### 找每種種類的商品連結
+        req_skii = requests.get(product_list_url, headers=headers)
+        soup_skii = BeautifulSoup(req_skii.text, "html.parser")
+        search_skii_html = soup_skii.find_all(
+            "a", class_="event_buy_now_choose_product"
+        )
+
+        for each in search_skii_html:
+            skii_href = each.get("href")
+            print(skii_href)
+
+            ####找到各個商品名稱以及商品資訊####
+            req_skii = requests.get(skii_href, headers=headers)
+            soup_skii = BeautifulSoup(req_skii.text, "html.parser")
+            search_skii_html = soup_skii.find("h1", class_="productView-title")
+            search_product_name = search_skii_html.text
+            print(f"化妝品名稱: {search_product_name}")
+
+            # 確保set_products裡面的東西不會重複
+            if search_product_name in set_products:
+                print(search_product_name + " 已存在")
+                continue
+            # 將商品名稱加入集合中，避免添加重複商品
+            set_products.add(search_product_name)
+
+            # 搜尋成分
+            search_ingredient_html = soup_skii.select("div.ingredients-content")
+            for each in search_ingredient_html:
+                islist_ingredient = each.find_all("li")
+                if islist_ingredient:
+                    for is_ingredient in islist_ingredient:
+                        text = is_ingredient.text
+                        print(text)
+                else:
+                    list_ingredient = each.find_all("p")
+                    for is_ingredient in list_ingredient:
+                        text = is_ingredient.text
+                        if "Ingredients" in text:
+                            print(text)
+
+            # lines = text.split("\n")
+            # list = []
+            # for line in lines:
+            #     list.append(line.strip())
+
+            # compare_ingred(search_product_name, list)
+
+            # ###將成分存入json檔###
+            # with open("ingred_paris.json", "w", encoding="utf-8") as f:
+            #     json.dump(ingred_json, f, ensure_ascii=False, indent=4)
+            #     # print(f"ingredient:{list}")
+        print(f"----------------------")
 
 
 if __name__ == "__main__":
@@ -279,9 +317,4 @@ if __name__ == "__main__":
     }
 
     ingred_json = []
-    get_PARIS()
-    # get_SKII_ingredient()
-
-    ingred_json = []
-    get_PARIS()
-    # get_SKII_ingredient()
+    get_SKII()
