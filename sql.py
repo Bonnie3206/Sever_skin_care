@@ -36,8 +36,52 @@ def conn():
 
     return connect
 
+def delete(table_name,condition):
+    ##更新之前先刪掉舊資料
+    with connect_db.cursor() as cursor:
+        query = f"DELETE from {table_name} WHERE {condition};"
+        cursor.execute(query)
+        connect_db.commit()
+        print("刪除成功")
+        
+def insert_product_ingred_to_db(json_file):
+    with connect_db.cursor() as cursor:
 
-def insert_ingredient_intro_to_db(ingred_name, ingred_intro):
+    ###將成分存入json檔###
+        with open(json_file, "r", encoding="utf-8") as f:
+            data=json.load(f)
+            for i in data:
+                
+                product_name = i["name"]
+                ingred_name = i["ingredient"]
+            
+                ###SELECT
+                #Product_table中查詢叫做product_name的product_number
+                query = f"SELECT product_number FROM Product_table where product_name = ?"
+                cursor.execute(query, product_name)
+                product_number_results = cursor.fetchone()
+                product_number = int(product_number_results[0])
+
+                for ingred in ingred_name:
+
+                    #Ingredient_introduction_table中查詢叫做ingredient_en的ingredient_number
+                    query = f"SELECT ingredient_number FROM Ingredient_introduction_table where ingredient_en = ?"
+                    cursor.execute(query, ingred)
+                    ingred_number_results = cursor.fetchone()
+                    ingred_number = int(ingred_number_results[0])
+
+                    print(f"product_name:{product_name},product_number:{product_number},ingred_name:{ingred},ingred_number:{ingred_number}")
+                    print("---------------------")
+
+                    ###INSERT
+                    #Product_ingredient_table中新增product_number和ingred_number
+                    query = f"INSERT INTO Product_ingredient_table (product_number,ingredient_number) VALUES (?,?)"
+                    cursor.execute(query, (product_number,ingred_number))
+                    connect_db.commit()
+                    print("新增成功")
+                    print("---------------------")
+
+def insert_ingredient_intro_to_db(ingred_name, ingred_intro,ingred_name_en):
     with connect_db.cursor() as cursor:
         ##查詢Ingredient_introduction_table是否有叫做ingredient的成分
         query = f"SELECT * FROM Ingredient_introduction_table where ingredient = ?"
@@ -46,8 +90,8 @@ def insert_ingredient_intro_to_db(ingred_name, ingred_intro):
 
         print(ingred_name)
         if not ingred_name_results:  # 如果目前資料庫沒有此成分，則新增
-            query = f"INSERT INTO Ingredient_introduction_table (ingredient,ingredient_introduction) VALUES (?,?)"
-            cursor.execute(query, (ingred_name, ingred_intro))
+            query = f"INSERT INTO Ingredient_introduction_table (ingredient,ingredient_introduction,ingredient_en) VALUES (?,?,?)"
+            cursor.execute(query, (ingred_name, ingred_intro, ingred_name_en))
             connect_db.commit()
             print("新增成功")
             print("---------------------")
@@ -122,9 +166,11 @@ def insert_product_to_db(product_name, ingred):
 if __name__ == "__main__":
     connect_db = conn()
     ###ingredient_introduction_table###
-    prefer_ingred = getProduct.prefer_ingred
-    for ingred in prefer_ingred:
-        insert_ingredient_intro_to_db(ingred["name"], ingred["introduction"])
+    # prefer_ingred = getProduct.new_ingred
+    # for ingred in prefer_ingred:
+    #     insert_ingredient_intro_to_db(ingred["name"], ingred["introduction"],ingred["name_en"])
+    ###
+    insert_product_ingred_to_db("ingred_paris.json")
 
     #######insert_product_to_db#######
 

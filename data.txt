@@ -1,0 +1,48 @@
+###比對抓到的成分是否為我們想要的，若是則存入list中###
+    #     prefer_ingred = [
+    #     "玻尿酸",
+    #     "維他命A",
+    #     "泛酸(維他命B5)",
+    #     "角鯊烯",
+    #     "胜太",
+    #     "維他命C",
+    #     "果酸",
+    #     "胺基酸",
+    #     "神經醯胺",
+    #     "水楊酸",
+    #     "香精",
+    #     "熊果素",
+    #     "膠原蛋白",
+    #     "二氧化鈦",
+    #     "傳明酸",
+    #     "三胜太",
+    #     "六胜太",
+    #     "海藻酸鈉",
+    #     "矽橡膠",
+    #     "泛酸",
+    #     "礦物油"
+    # ]
+
+    #     prefer_ingred_EN = [
+    #     "Hyaluronic Acid",
+    #     "Vitamin A",
+    #     "Panthenol (Vitamin B5)",
+    #     "Squalene",
+    #     "Peptides",
+    #     "Vitamin C",
+    #     "Alpha Hydroxy Acids (AHAs)",
+    #     "Amino Acids",
+    #     "Ceramides",
+    #     "Salicylic Acid",
+    #     "Fragrance",
+    #     "Arbutin",
+    #     "Collagen",
+    #     "Titanium Dioxide",
+    #     "Transamin",
+    #     "Tripeptides",
+    #     "Argireline",
+    #     "Sodium Alginate",
+    #     "CYCLOPENTASILOXANE",
+    #     'PANTHENOL',
+    #     "Mineral Oil"
+    # ]

@@ -3,29 +3,136 @@ from bs4 import BeautifulSoup
 from urllib import request
 import json
 import re
+new_ingred=[
+    {
+        "name": "玻尿酸",
+        "introduction": "玻尿酸的介紹",
+        "name_en": "Hyaluronic Acid"
+    },
+    {
+        "name": "維他命A",
+        "introduction": "維他命A的介紹",
+        "name_en": "Vitamin A"
+    },
+    {
+        "name": "泛酸(維他命B5)",
+        "introduction": "泛酸的介紹",
+        "name_en": "Panthenol (Vitamin B5)"
+    },
+    {
+        "name": "角鯊烯",
+        "introduction": "角鯊烯的介紹",
+        "name_en": "Squalene"
+    },
+    {
+        "name": "胜太",
+        "introduction": "胜太的介紹",
+        "name_en": "Peptides"
+    },
+    {
+        "name": "維他命C",
+        "introduction": "維他命C的介紹",
+        "name_en": "Vitamin C"
+    },
+    {
+        "name": "果酸",
+        "introduction": "果酸的介紹",
+        "name_en": "Alpha Hydroxy Acids (AHAs)"
+    },
+    {
+        "name": "胺基酸",
+        "introduction": "胺基酸的介紹",
+        "name_en": "Amino Acids"
+    },
+    {
+        "name": "神經醯胺",
+        "introduction": "神經醯胺的介紹",
+        "name_en": "Ceramides"
+    },
+    {
+        "name": "水楊酸",
+        "introduction": "水楊酸的介紹",
+        "name_en": "Salicylic Acid"
+    },
+    {
+        "name": "香精",
+        "introduction": "香精的介紹",
+        "name_en": "Fragrance"
+    },
+    {
+        "name": "熊果素",
+        "introduction": "熊果素的介紹",
+        "name_en": "Arbutin"
+    },
+    {
+        "name": "膠原蛋白",
+        "introduction": "膠原蛋白的介紹",
+        "name_en": "Collagen"
+    },
+    {
+        "name": "二氧化鈦",
+        "introduction": "二氧化鈦的介紹",
+        "name_en": "Titanium Dioxide"
+    },
+    {
+        "name": "傳明酸",
+        "introduction": "傳明酸的介紹",
+        "name_en": "Transamin"
+    },
+    {
+        "name": "三胜太",
+        "introduction": "三胜太的介紹",
+        "name_en": "Tripeptides"
+    },
+    {
+        "name": "六胜太",
+        "introduction": "六胜太的介紹",
+        "name_en": "Argireline"
+    },
+    {
+        "name": "海藻酸鈉",
+        "introduction": "海藻酸鈉的介紹",
+        "name_en": "Sodium Alginate"
+    },
+    {
+        "name": "矽橡膠",
+        "introduction": "矽橡膠的介紹",
+        "name_en": "CYCLOPENTASILOXANE"
+    },
+    {
+        "name": "泛酸",
+        "introduction": "泛酸的介紹",
+        "name_en": "PANTHENOL"
+    },
+    {
+        "name": "礦物油",
+        "introduction": "礦物油的介紹",
+        "name_en": "Mineral Oil"
+    }
+]
 
 prefer_ingred = [
     {"name": "玻尿酸", "introduction": "玻尿酸的介紹"},
-    {"name": "維他命A", "introduction": "維他命A的介绍"},
-    {"name": "泛酸(維他命B5)", "introduction": "泛酸的介绍"},
-    {"name": "角鯊烯", "introduction": "角鯊烯的介绍"},
-    {"name": "胜肽肽", "introduction": "胜肽的介绍"},
-    {"name": "維他命C", "introduction": "維他命C的介绍"},
-    {"name": "果酸", "introduction": "果酸的介绍"},
-    {"name": "胺基酸", "introduction": "胺基酸的介绍"},
-    {"name": "神經醯胺", "introduction": "神經醯胺的介绍"},
-    {"name": "水楊酸", "introduction": "水楊酸的介绍"},
-    {"name": "香精", "introduction": "香精的介绍"},
-    {"name": "熊果素", "introduction": "熊果素的介绍"},
-    {"name": "膠原蛋白", "introduction": "膠原蛋白的介绍"},
-    {"name": "二氧化鈦", "introduction": "二氧化鈦的介绍"},
-    {"name": "傳明酸", "introduction": "傳明酸的介绍"},
-    {"name": "三胜肽", "introduction": "三胜肽的介绍"},
-    {"name": "六胜肽", "introduction": "六胜肽的介绍"},
-    {"name": "海藻酸鈉", "introduction": "海藻酸鈉的介绍"},
-    {"name": "矽橡膠", "introduction": "矽橡膠的介绍"},
-    {"name": "泛酸", "introduction": "泛酸的介绍"},
-    {"name": "礦物油", "introduction": "礦物油的介绍"},
+    {"name": "維他命A", "introduction": "維他命A的介紹"},
+    {"name": "泛酸(維他命B5)", "introduction": "泛酸的介紹"},
+    {"name": "角鯊烯", "introduction": "角鯊烯的介紹"},
+    {"name": "胜太", "introduction": "胜太的介紹"},
+    {"name": "維他命C", "introduction": "維他命C的介紹"},
+    {"name": "果酸", "introduction": "果酸的介紹"},
+    {"name": "胺基酸", "introduction": "胺基酸的介紹"},
+    {"name": "神經醯胺", "introduction": "神經醯胺的介紹"},
+    {"name": "水楊酸", "introduction": "水楊酸的介紹"},
+    {"name": "香精", "introduction": "香精的介紹"},
+    {"name": "熊果素", "introduction": "熊果素的介紹"},
+    {"name": "膠原蛋白", "introduction": "膠原蛋白的介紹"},
+    {"name": "二氧化鈦", "introduction": "二氧化鈦的介紹"},
+    {"name": "傳明酸", "introduction": "傳明酸的介紹"},
+    {"name": "三胜太", "introduction": "三胜太的介紹"},
+    {"name": "六胜太", "introduction": "六胜太的介紹"},
+    {"name": "海藻酸鈉", "introduction": "海藻酸鈉的介紹"},
+    {"name": "矽橡膠", "introduction": "矽橡膠的介紹"},
+    {"name": "泛酸", "introduction": "泛酸的介紹"},
+    {"name": "礦物油", "introduction": "礦物油的介紹"},
 ]
 prefer_ingred_EN = [
     {"name": "Hyaluronic Acid", "introduction": "Introduction to Hyaluronic Acid"},
@@ -89,67 +196,19 @@ def ptt():
 
 
 def compare_ingred(search_product_name, ingred_list):
-    ###比對抓到的成分是否為我們想要的，若是則存入list中###
-    #     prefer_ingred = [
-    #     "玻尿酸",
-    #     "維他命A",
-    #     "泛酸(維他命B5)",
-    #     "角鯊烯",
-    #     "胜肽",
-    #     "維他命C",
-    #     "果酸",
-    #     "胺基酸",
-    #     "神經醯胺",
-    #     "水楊酸",
-    #     "香精",
-    #     "熊果素",
-    #     "膠原蛋白",
-    #     "二氧化鈦",
-    #     "傳明酸",
-    #     "三胜肽",
-    #     "六胜肽",
-    #     "海藻酸鈉",
-    #     "矽橡膠",
-    #     "泛酸",
-    #     "礦物油"
-    # ]
-
-    #     prefer_ingred_EN = [
-    #     "Hyaluronic Acid",
-    #     "Vitamin A",
-    #     "Panthenol (Vitamin B5)",
-    #     "Squalene",
-    #     "Peptides",
-    #     "Vitamin C",
-    #     "Alpha Hydroxy Acids (AHAs)",
-    #     "Amino Acids",
-    #     "Ceramides",
-    #     "Salicylic Acid",
-    #     "Fragrance",
-    #     "Arbutin",
-    #     "Collagen",
-    #     "Titanium Dioxide",
-    #     "Transamin",
-    #     "Tripeptides",
-    #     "Argireline",
-    #     "Sodium Alginate",
-    #     "CYCLOPENTASILOXANE",
-    #     'PANTHENOL',
-    #     "Mineral Oil"
-    # ]
-
+    
     print("--------json start--------")
     print(len(ingred_list))
     json_data = []
     ingredient = []
 
     for i in range(len(ingred_list)):  ##依據不同成分跑
-        for j in range(len(prefer_ingred)):  ##比對成分是否為我們想要的
+        for j in range(len(new_ingred)):  ##比對成分是否為我們想要的
             if (
-                prefer_ingred[j]["name"] in ingred_list[i]
-                or prefer_ingred_EN[j]["name"].lower() in ingred_list[i].lower()
+                new_ingred[j]["name"] == ingred_list[i]
+                or new_ingred[j]["name_en"].lower() == ingred_list[i].lower()
             ):
-                ingredient.append(prefer_ingred_EN[j]["name"])
+                ingredient.append(new_ingred[j]["name_en"])
 
     json_data = [{"name": search_product_name, "ingredient": ingredient}]
 
@@ -312,9 +371,11 @@ def get_SKII():
 
 
 if __name__ == "__main__":
+
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"
     }
 
     ingred_json = []
-    get_SKII()
+    #get_SKII()
+    get_PARIS()
