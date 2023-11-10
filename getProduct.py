@@ -195,7 +195,7 @@ def ptt():
     #      page_number -= 1
 
 
-def compare_ingred(search_product_name, ingred_list):
+def compare_ingred(search_product_name, ingred_list, image_url):
     
     print("--------json start--------")
     print(len(ingred_list))
@@ -210,7 +210,7 @@ def compare_ingred(search_product_name, ingred_list):
             ):
                 ingredient.append(new_ingred[j]["name_en"])
 
-    json_data = [{"name": search_product_name, "ingredient": ingredient}]
+    json_data = [{"name": search_product_name, "ingredient": ingredient, "img_url": image_url }]
 
     ingred_json.extend(json_data)
 
@@ -218,9 +218,7 @@ def compare_ingred(search_product_name, ingred_list):
     pretty_json = json.dumps(ingred_json, ensure_ascii=False, indent=4)
     print(f"json : {pretty_json}")
 
-
 ####PARIS####
-
 
 def get_PARIS():
     set_products = set()  # 確保裡面的東西不會重複
@@ -255,28 +253,23 @@ def get_PARIS():
             initialdata_json = match.group(1)
             initialdata_dict = json.loads(initialdata_json)
 
-            ####找到所有商品連結####
+            ####找到所有商品連結,名稱跟圖片####
             for item in initialdata_dict["list"]:
-                title = item["itemResult"].get("title", "")
+                search_product_name = item["itemResult"].get("title", "")
+                image = item["itemResult"]["image"].get("fileName", "")
+                image_url = server + image
                 url = item["url"]
 
-                ####找到各個商品名稱以及商品資訊####
-                req_product = requests.get(url, headers=headers)
-                soup_product = BeautifulSoup(req_product.text, "html.parser")
-                search_product_html = soup_product.find(
-                    "span", class_="oap-product-header__name"
-                )
-                search_product_name = search_product_html.text
+                ####找到各個商品名稱以及商品資訊####                
                 print(f"化妝品名稱: {search_product_name}")
 
                 # 確保set_products裡面的東西不會重複
                 if search_product_name in set_products:
                     print(search_product_name + " 已存在")
                     continue
-
                 # 將商品名稱加入集合中，避免添加重複商品
                 set_products.add(search_product_name)
-
+                # 搜尋成分
                 req_product = requests.get(url, headers=headers)
                 soup_product = BeautifulSoup(req_product.text, "html.parser")
                 search_product_html = soup_product.select("div.field-text")
@@ -288,7 +281,7 @@ def get_PARIS():
                 for line in lines:
                     list.append(line.strip())
 
-                compare_ingred(search_product_name, list)
+                compare_ingred(search_product_name, list, image_url)
 
                 ###將成分存入json檔###
                 with open("ingred_paris.json", "w", encoding="utf-8") as f:

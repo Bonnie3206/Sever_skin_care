@@ -127,40 +127,57 @@ def select_brand(brand_name):
     return results
 
 
-def insert_product_to_db(product_name, ingred):
+def insert_product_to_db(json_file):
+
     with connect_db.cursor() as cursor:
-        brand = "PARIS"
-        ###SELECT
-        ##查詢是否有叫做brand_name的品牌，並將該品牌的brand_number取至brand_number_results
-        query = f"SELECT brand_number FROM Brand_table where brand = ?"
-        cursor.execute(query, brand)
-        brand_number_results = cursor.fetchone()
-        brand_number_results = int(brand_number_results[0])
 
-        ##依據該brand_numeber查詢是否有叫做product_name的商品
-        query = f"SELECT * FROM Product_table where product_name = ?"
-        cursor.execute(query, product_name)
-        product_name_results = cursor.fetchall()
+        # 打開json檔，並將資料存入cosmetics_data
+        # 依據cosmetics_data的長度跑迴圈，並將每個商品名稱存入product_name
+        
+        with open(json_file, "r", encoding="utf-8") as json_file:
 
-        print(product_name)
-        if len(product_name_results) == 0:  # 如果目前資料庫沒有此商品，則新增
-            query = (
-                f"INSERT INTO Product_table (brand_number,product_name) VALUES (?,?)"
-            )
-            cursor.execute(query, (brand_number_results, product_name))
-            connect_db.commit()
-            print("新增成功")
-            print("---------------------")
+            cosmetics_data = json.load(json_file)
 
-            print("ingred")
-            print(ingred)
-            print("---------------------")
+        for i in cosmetics_data:
 
-            query = f"INSERT INTO Product_table (product_name,ingred) VALUES (?,?)"
+            product_name = i["name"]
+            img_url = i["img_url"]
 
-        else:
-            print("已有此商品")
-            print("---------------------")
+            brand = "PARIS"
+            ###SELECT
+            ##查詢是否有叫做brand_name的品牌，並將該品牌的brand_number取至brand_number_results
+            query = f"SELECT brand_number FROM Brand_table where brand = ?"
+            cursor.execute(query, brand)
+            brand_number_results = cursor.fetchone()
+            brand_number_results = int(brand_number_results[0])
+
+            ##依據該brand_numeber查詢是否有叫做product_name的商品
+            query = f"SELECT * FROM Product_table where product_name = ?"
+            cursor.execute(query, product_name)
+            product_name_results = cursor.fetchone()#一筆資料傳入
+            product_number_results = int(product_name_results[0])#取出product_number
+            print(product_name)
+            
+            if len(product_name_results) == 0:  # 如果目前資料庫沒有此商品，則新增
+                query = (
+                    f"INSERT INTO Product_table (brand_number,product_name,img_url) VALUES (?,?,?)"
+                )
+                cursor.execute(query, (brand_number_results, product_name))
+                connect_db.commit()
+                print("新增成功")
+                print("---------------------")
+
+            else:
+                print("已有此商品,新增img_url")
+                query = (
+
+                    f"UPDATE Product_table SET img_url = ? WHERE product_number = ?"
+                )
+                cursor.execute(query, (img_url, product_number_results))
+                connect_db.commit()
+                print("---------------------")
+
+
 
 
 if __name__ == "__main__":
@@ -169,22 +186,15 @@ if __name__ == "__main__":
     # prefer_ingred = getProduct.new_ingred
     # for ingred in prefer_ingred:
     #     insert_ingredient_intro_to_db(ingred["name"], ingred["introduction"],ingred["name_en"])
-    ###
-    insert_product_ingred_to_db("ingred_paris.json")
 
-    #######insert_product_to_db#######
+    ###insert_product_ingred_to_db
 
-    # 打開json檔，並將資料存入cosmetics_data
-    # 依據cosmetics_data的長度跑迴圈，並將每個商品名稱存入product_name
+    # insert_product_ingred_to_db("ingred_paris.json")
 
-    # with open("ingred.json", "r", encoding="utf-8") as json_file:
+    ######insert_product_to_db#######
 
-    #     cosmetics_data = json.load(json_file)
-
-    # for i in cosmetics_data:
-
-    #     insert_product_to_db(i["name"],i["ingerdients"])
-
+    insert_product_to_db("ingred_paris.json")
+    
     #######insert_brand_to_db#######
     # brand_name = ['SK2','PARIS','LANCOME','CLINIQUE','KIEHL','SHISEIDO','LA MER','DIOR','ESTEE LAUDER','CLARINS','YSL']
 
